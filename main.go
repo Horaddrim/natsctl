@@ -14,8 +14,12 @@
 
 package main
 
-import "github.com/horaddrim/natsctl/cmd"
+import (
+	"github.com/fatih/color"
+	"github.com/horaddrim/natsctl/cmd"
+)
 
 func main() {
+	color.Magenta("Welcome to the NATSCTL CLI :D")
 	cmd.Execute()
 }
