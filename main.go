@@ -21,5 +21,6 @@ import (
 
 func main() {
 	color.Magenta("Welcome to the NATSCTL CLI :D")
+
 	cmd.Execute()
 }
