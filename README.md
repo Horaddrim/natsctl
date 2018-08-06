@@ -1,5 +1,7 @@
 # natsctl
 [![Go Report Card](https://goreportcard.com/badge/github.com/Horaddrim/natsctl)](https://goreportcard.com/report/github.com/Horaddrim/natsctl)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2088/badge)](https://bestpractices.coreinfrastructure.org/projects/2088)   
 The simplest CLI, but one of the most useful ever! If you ever wanted to use NATS client within your bash :D
 
 ## Inspiration
