@@ -18,57 +18,65 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"strconv"
 
 	"github.com/fatih/color"
 	"github.com/horaddrim/natsctl/nats"
 	"github.com/horaddrim/natsctl/utils"
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
 	Use:   "status",
-	Short: "Retorna o status do servidor.",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Returns the server status",
+	Long:  `This command will return a table pretty printing you server's info to you.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		var protocol string
 		client := utils.NewHTTPClient()
 		server := new(nats.Server)
-		table := tablewriter.NewWriter(os.Stdout)
 
 		hostIP := cmd.Flag("host").Value.String()
+		serverPort := cmd.Flag("port").Value.String()
+		forceHTTPS, err := strconv.ParseBool(cmd.Flag("force-https").Value.String())
+
+		if err != nil {
+			fmt.Printf("An error have ocured %s", err.Error())
+		}
+
+		if forceHTTPS {
+			protocol = "https"
+		} else {
+			protocol = "http"
+		}
+
+		finalURL := nats.PrepareHost(protocol, hostIP, serverPort, nats.VariableRoute)
 
 		color.Magenta("Connecting to server %s", hostIP)
-
-		host := fmt.Sprintf("http://%s:8222", hostIP)
-
-		finalURL := fmt.Sprintf("%s/connz", host)
 
 		resp, err := client.Get(finalURL)
 
 		if err != nil {
-			fmt.Printf("Ocorreu um erro %s", err.Error())
+			fmt.Printf("An error have ocured %s", err.Error())
 		}
 
 		buff, _ := ioutil.ReadAll(resp.Body)
+
 		json.Unmarshal(buff, server)
 
-		table.SetHeader([]string{"SERVER", "TIMESTAMP", "ACTIVE_CONNECTIONS", "TOTAL_CONNECTIONS"})
+		memoryUsage := strconv.FormatInt((server.MemoryUsage / 1024 / 1024), 10)
 
 		outputData := [][]string{
-			[]string{server.ID, server.ServerTime.String(), strconv.FormatInt(server.ActiveConnections, 10), strconv.FormatInt(server.TotalConnections, 10)},
+			[]string{server.ID,
+				server.ServerTime.String(),
+				server.Age,
+				fmt.Sprintf("%s MB", memoryUsage),
+			},
 		}
 
-		for _, line := range outputData {
-			table.Append(line)
-		}
+		table := utils.NewTable(nats.DefaultHeaders)
+
+		table.AppendBulk(outputData)
 
 		table.Render()
 	},
@@ -86,5 +94,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	statusCmd.PersistentFlags().String("host", "localhost", "This is the host aimed to connect")
-	rootCmd.MarkPersistentFlagRequired("host")
+	statusCmd.PersistentFlags().String("port", "8222", "This is the port to connect on the given host")
+	statusCmd.PersistentFlags().Bool("force-https", true, "Flag to force the use of the HTTPS protocol")
 }
