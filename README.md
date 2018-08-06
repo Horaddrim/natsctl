@@ -1,7 +1,9 @@
 # natsctl
 [![Go Report Card](https://goreportcard.com/badge/github.com/Horaddrim/natsctl)](https://goreportcard.com/report/github.com/Horaddrim/natsctl)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2088/badge)](https://bestpractices.coreinfrastructure.org/projects/2088)   
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2088/badge)](https://bestpractices.coreinfrastructure.org/projects/2088)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
 The simplest CLI, but one of the most useful ever! If you ever wanted to use NATS client within your bash :D
 
 ## Inspiration
@@ -37,4 +39,6 @@ Today we have only the `status` command, wich you can run something like this:
 - [ ] Add the ISSUE TEMPLATE
 - [ ] Think about support Windows versions
 - [ ] Upgrade the code documentation too
-- [ ] Improve the `help` flag and command description
+- [ ] Improve the `help` flag and command description  
+
+[![Open Source Love](https://badges.frapsoft.com/os/v3/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)  
