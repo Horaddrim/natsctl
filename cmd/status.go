@@ -18,9 +18,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"strconv"
 
+	"github.com/fatih/color"
 	"github.com/horaddrim/natsctl/nats"
 	"github.com/horaddrim/natsctl/utils"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -37,8 +41,17 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client := utils.NewHTTPClient()
 		server := new(nats.Server)
+		table := tablewriter.NewWriter(os.Stdout)
 
-		resp, err := client.Get("http://40.121.32.164:8222/connz")
+		hostIP := cmd.Flag("host").Value.String()
+
+		color.Magenta("Connecting to server %s", hostIP)
+
+		host := fmt.Sprintf("http://%s:8222", hostIP)
+
+		finalURL := fmt.Sprintf("%s/connz", host)
+
+		resp, err := client.Get(finalURL)
 
 		if err != nil {
 			fmt.Printf("Ocorreu um erro %s", err.Error())
@@ -47,8 +60,17 @@ to quickly create a Cobra application.`,
 		buff, _ := ioutil.ReadAll(resp.Body)
 		json.Unmarshal(buff, server)
 
-		fmt.Printf("TIME  ALIVE_CONNECTIONS  TOTAL_CONNECTIONS  SERVER\n")
-		fmt.Printf("%s | %d | %d  | %s", server.ServerTime, server.ActiveConnections, server.TotalConnections, server.ID)
+		table.SetHeader([]string{"SERVER", "TIMESTAMP", "ACTIVE_CONNECTIONS", "TOTAL_CONNECTIONS"})
+
+		outputData := [][]string{
+			[]string{server.ID, server.ServerTime.String(), strconv.FormatInt(server.ActiveConnections, 10), strconv.FormatInt(server.TotalConnections, 10)},
+		}
+
+		for _, line := range outputData {
+			table.Append(line)
+		}
+
+		table.Render()
 	},
 }
 
@@ -63,5 +85,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// statusCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	statusCmd.PersistentFlags().String("host", "localhost", "This is the host aimed to connect")
+	rootCmd.MarkPersistentFlagRequired("host")
 }
