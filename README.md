@@ -1,4 +1,5 @@
 # natsctl
+[![Go Report Card](https://goreportcard.com/badge/github.com/Horaddrim/natsctl)](https://goreportcard.com/report/github.com/Horaddrim/natsctl)
 The simplest CLI, but one of the most useful ever! If you ever wanted to use NATS client within your bash :D
 
 ## Inspiration
